@@ -17,29 +17,7 @@
 #
 # class Player(name, symbol)
 #
-# class Game
-#   - board : 2D array (3 columns x 3 rows ) with all initial value in rows being nil
-#   - State variable of with enums INTIIALIZED, ON_GOING, FINISHED with initial value being INITIALIZED
-#   - player_1 = player_1
-#   - player_2 = player_2
-#   - currentTurn = player1
-#
-#   start()
-#     if game is already ongoing then throw an error
-#     set state variable to ON_GOING
-#     set all values in 2D array to nil
-#     set currentTurn to player1
-#
-#    getInputFromPlayer()
-#       player = currentTurn
-#       ask player to input coordinates for their move (2 2)
-#       if the coordinates are not numbers or invalid range ask them to reinput them
-#       else if board[input] is not nil then inform player that the cell is already filled
-#       else set board[input] to player.symbol
-#
-#    checkForWinConditions()
-#         isFinished = hasDiagonalWin() or hasVerticalWin() or hasHorizontalWin() or isTie()
-#         if isFinished then set game state to FINISHED
+
 #
 #
 #
@@ -54,3 +32,19 @@
 #    game.checkForWinConditions()
 # end
 #
+require_relative 'Player'
+
+def getPlayers
+  puts "Enter player 1's name"
+  player1 = Player.new(gets.chomp, 'X')
+  puts "Enter player 2's name"
+  player2 = Player.new(gets.chomp, 'O')
+  [player1, player2]
+end
+
+def main
+  player1, player2 = getPlayers
+  game = TicTacToe.new(player1, player2)
+  game.start
+  game.next_move until game.finished?
+end
