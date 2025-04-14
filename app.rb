@@ -33,8 +33,9 @@
 # end
 #
 require_relative 'Player'
+require_relative 'tic_tac_toe'
 
-def getPlayers
+def input_players
   puts "Enter player 1's name"
   player1 = Player.new(gets.chomp, 'X')
   puts "Enter player 2's name"
@@ -43,8 +44,10 @@ def getPlayers
 end
 
 def main
-  player1, player2 = getPlayers
+  player1, player2 = input_players
   game = TicTacToe.new(player1, player2)
   game.start
   game.next_move until game.finished?
 end
+
+main
