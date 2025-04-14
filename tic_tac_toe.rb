@@ -14,7 +14,7 @@ class TicTacToe
   def initialize(player1, player2)
     @player1 = player1
     @player2 = player2
-    @state = INITIALIZED
+    @state = STATE[:INITIALIZED]
     @gameboard = Array.new(3) { Array.new(3) { EMPTY_CELL } } # 3x3 game board with all cells set to nil/empty
   end
 
