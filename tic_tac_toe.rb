@@ -1,3 +1,4 @@
+require 'pry-byebug'
 # frozen_string_literal: true
 
 STATE = {
@@ -20,15 +21,15 @@ class TicTacToe
 
   def start
     throw Exception('Game has already started') if @state == STATE[:ON_GOING]
-    @gameboard = Array.new(3) { Array.new(3) { nil } } # 3x3 game board with all cells set to nil/empty
+    @gameboard = Array.new(3) { Array.new(3, nil) } # 3x3 game board with all cells set to nil/empty
     @current_turn = player1
     @state = STATE[:ON_GOING]
   end
 
   def next_move
     player = @current_turn
-    coords = input_coords(player)
-    @gameboard[coords[0]][coords[1]] = player.symbol
+    x, y = input_coords(player)
+    @gameboard[x][y] = player.symbol
     @current_turn = @current_turn == player1 ? player2 : player1
   end
 
@@ -38,18 +39,40 @@ class TicTacToe
     game_finished
   end
 
+  def to_s
+    board_display = ''
+    @gameboard.each do |row|
+      row.each_with_index do |cell, index|
+        board_display += case index
+                         when 0
+                           "| #{cell || ' '}"
+                         when (row.size - 1)
+                           "#{cell || ' '} |\n"
+                         else
+                           "#{cell || ' '} | "
+                         end
+      end
+    end
+    board_display
+  end
+
   private
 
   def input_coords(player) # rubocop:disable Metrics/MethodLength
     coords = nil
     begin
       puts "Please enter next move for #{player.name}"
-      coords = gets.split.map(&:to_i)
-      puts 'That cell is already in use' if @gameboard[coords[0]][coords[1]] != EMPTY_CELL
+      coords = gets.split.map { |coord| Integer(coord) - 1 }
+      raise '2 arguments expected' if coords.size != 2
+      raise 'coordinates are out of range of the grid' if !coords[0].between?(0, 2) || !coords[1].between?(0, 2)
+      raise 'That cell is already in use' if coordinate_in_use?(coords.fetch(0), coords.fetch(1))
+    rescue TypeError
+      puts 'Incorrect format'
     rescue ArgumentError
       puts 'coordinates contained non-numeric values'
-    rescue IndexError
-      puts 'coordinates are out of range of the grid [0 - 3]'
+    rescue StandardError => e
+      puts e.message
+      coords = nil
     end
 
     return coords unless coords.nil?
@@ -57,14 +80,23 @@ class TicTacToe
     input_coords(player)
   end
 
+  def coordinate_in_use?(row, column)
+    @gameboard.fetch(row).fetch(column) != EMPTY_CELL
+  end
+
   def horizontal_win?
     @gameboard.any? { |row| row.uniq.size <= 1 && !row.all?(&:nil?) }
   end
 
   def vertical_win?
+    win_found = false
     @gameboard[2].each_with_index do |cell, index|
-      break true if cell != EMPTY_CELL && @gameboard[1][index] == cell && @gameboard[0][index] == cell
+      if cell != EMPTY_CELL && @gameboard[1][index] == cell && @gameboard[0][index] == cell
+        win_found = true
+        break
+      end
     end
+    win_found
   end
 
   def diagonal_win?
