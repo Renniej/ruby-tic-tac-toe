@@ -47,7 +47,10 @@ def main
   player1, player2 = input_players
   game = TicTacToe.new(player1, player2)
   game.start
-  game.next_move until game.finished?
+  until game.finished?
+    puts game
+    game.next_move
+  end
 end
 
 main
