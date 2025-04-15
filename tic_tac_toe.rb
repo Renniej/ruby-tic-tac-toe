@@ -7,14 +7,16 @@ STATE = {
   FINISHED: 2
 }
 
+TIE = 'TIE'
 EMPTY_CELL = nil
 
 class TicTacToe
-  attr_reader :player1, :player2
+  attr_reader :player1, :player2, :current_turn
 
   def initialize(player1, player2)
     @player1 = player1
     @player2 = player2
+    @winner = nil
     @state = STATE[:INITIALIZED]
     @gameboard = Array.new(3) { Array.new(3) { EMPTY_CELL } } # 3x3 game board with all cells set to nil/empty
   end
@@ -23,20 +25,31 @@ class TicTacToe
     throw Exception('Game has already started') if @state == STATE[:ON_GOING]
     @gameboard = Array.new(3) { Array.new(3, nil) } # 3x3 game board with all cells set to nil/empty
     @current_turn = player1
+    @winner = nil
     @state = STATE[:ON_GOING]
   end
 
   def next_move
+    return nil unless @state == STATE[:ON_GOING]
+
     player = @current_turn
     x, y = input_coords(player)
     @gameboard[x][y] = player.symbol
     @current_turn = @current_turn == player1 ? player2 : player1
   end
 
+  def display_winner
+    puts tie? ? 'It was a tie' : "#{@winner.name} won!"
+  end
+
   def finished?
-    game_finished = @state == STATE[:FINISHED] || horizontal_win? || vertical_win? || diagonal_win? || tie?
-    @state = STATE[:FINISHED] if game_finished
-    game_finished
+    return true if @state == STATE[:FINISHED]
+
+    if horizontal_win? || vertical_win? || diagonal_win? || tie?
+      @state = STATE[:FINISHED]
+      @winner = @current_turn == player1 ? player2 : player1 ## the person who made the previous move won the game.
+    end
+    @state == STATE[:FINISHED]
   end
 
   def to_s
