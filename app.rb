@@ -51,6 +51,8 @@ def main
     puts game
     game.next_move
   end
+
+  game.display_winner
 end
 
 main
