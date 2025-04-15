@@ -45,11 +45,11 @@ class TicTacToe
       row.each_with_index do |cell, index|
         board_display += case index
                          when 0
-                           "| #{cell || ' '}"
+                           "| #{cell || ' '} "
                          when (row.size - 1)
                            "#{cell || ' '} |\n"
                          else
-                           "#{cell || ' '} | "
+                           "| #{cell || ' '} | "
                          end
       end
     end
