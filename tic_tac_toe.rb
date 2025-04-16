@@ -54,20 +54,10 @@ class TicTacToe
   end
 
   def to_s
-    board_display = ''
-    @gameboard.each do |row|
-      row.each_with_index do |cell, index|
-        board_display += case index
-                         when 0
-                           "| #{cell || ' '} "
-                         when (row.size - 1)
-                           "#{cell || ' '} |\n"
-                         else
-                           "| #{cell || ' '} | "
+    display = @gameboard.flat_map do |cell|
+      "| #{cell[0] || ' '} | #{cell[1] || ' '} | #{cell[2] || ' '} | \n"
                          end
-      end
-    end
-    board_display
+    display.join('')
   end
 
   private
