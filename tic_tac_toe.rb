@@ -39,10 +39,6 @@ class TicTacToe
     @current_turn = @current_turn == player1 ? player2 : player1
   end
 
-  def display_winner
-    puts tie? ? 'It was a tie' : "#{@winner.name} won!"
-  end
-
   def finished?
     return true if @state == STATE[:FINISHED]
 
