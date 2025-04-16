@@ -1,4 +1,5 @@
 require 'pry-byebug'
+require_relative './util'
 # frozen_string_literal: true
 
 STATE = {
@@ -71,26 +72,26 @@ class TicTacToe
 
   private
 
-  def input_coords(player) # rubocop:disable Metrics/MethodLength
-    coords = nil
-    begin
-      puts "Please enter next move for #{player.name}"
-      coords = gets.split.map { |coord| Integer(coord) - 1 }
-      raise '2 arguments expected' if coords.size != 2
-      raise 'coordinates are out of range of the grid' if !coords[0].between?(0, 2) || !coords[1].between?(0, 2)
-      raise 'That cell is already in use' if coordinate_in_use?(coords.fetch(0), coords.fetch(1))
-    rescue TypeError
-      puts 'Incorrect format'
-    rescue ArgumentError
-      puts 'coordinates contained non-numeric values'
-    rescue StandardError => e
-      puts e.message
-      coords = nil
+  def input_coords(player)
+    puts "Please enter next move for #{player.name}"
+    coords = gets.split.map { |coord| Integer(coord) - 1 }
+    valid_coords(coords[0], coords[1]) ? coords : input_coords(player) # recursively calls if invalid coords
+  end
+
+  def valid_coords(row, column)
+    data = {}
+    if row.nil? || column.nil?
+      data[:error] = '2 arguments expected'
+    elsif !row.is_number? || !column.is_number?
+      data[:error] = 'coordinates contained non-numeric values'
+    elsif !row.between?(0, 2) || !column.between?(0, 2)
+      data[:error] = 'coordinates are out of range of the grid'
+    elsif coordinate_in_use?(row, column)
+      data[:error] = 'That cell is already in use'
     end
 
-    return coords unless coords.nil?
-
-    input_coords(player)
+    puts data[:error] unless data[:error].nil?
+    data[:error].nil?
   end
 
   def coordinate_in_use?(row, column)
