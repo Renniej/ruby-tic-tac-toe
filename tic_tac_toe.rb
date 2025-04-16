@@ -52,7 +52,7 @@ class TicTacToe
 
     return display unless @state == STATE[:FINISHED]
 
-    display + tie? ? 'It was a tie' : "#{winner.name} won!"
+    display + (tie? ? 'It was a tie' : "#{@winner.name} won!")
   end
 
   private
@@ -88,14 +88,10 @@ class TicTacToe
   end
 
   def vertical_win?
-    win_found = false
     @gameboard[2].each_with_index do |cell, index|
-      if cell != EMPTY_CELL && @gameboard[1][index] == cell && @gameboard[0][index] == cell
-        win_found = true
-        break
-      end
+      return true if cell != EMPTY_CELL && @gameboard[1][index] == cell && @gameboard[0][index] == cell
     end
-    win_found
+    false
   end
 
   def diagonal_win? # rubocop:disable Metrics/AbcSize
