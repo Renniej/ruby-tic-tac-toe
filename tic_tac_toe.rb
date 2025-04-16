@@ -75,23 +75,26 @@ class TicTacToe
   def input_coords(player)
     puts "Please enter next move for #{player.name}"
     coords = gets.split.map { |coord| Integer(coord) - 1 }
-    valid_coords(coords[0], coords[1]) ? coords : input_coords(player) # recursively calls if invalid coords
+    valid_coords?(coords[0], coords[1]) ? coords : input_coords(player) # recursively calls if invalid coords
+  rescue ArgumentError
+    puts 'coordinates contained non-numeric values'
+    input_coords(player)
   end
 
-  def valid_coords(row, column)
-    data = {}
-    if row.nil? || column.nil?
-      data[:error] = '2 arguments expected'
-    elsif !row.is_number? || !column.is_number?
-      data[:error] = 'coordinates contained non-numeric values'
+  def valid_coords?(row, column)
+    error_message = nil
+    if !row.is_number? || !column.is_number?
+      error_message = 'coordinates contained non-numeric values'
+    elsif row.nil? || column.nil?
+      error_message = '2 arguments expected'
     elsif !row.between?(0, 2) || !column.between?(0, 2)
-      data[:error] = 'coordinates are out of range of the grid'
+      error_message = 'coordinates are out of range of the grid'
     elsif coordinate_in_use?(row, column)
-      data[:error] = 'That cell is already in use'
+      error_message = 'That cell is already in use'
     end
 
-    puts data[:error] unless data[:error].nil?
-    data[:error].nil?
+    puts error_message unless error_message.nil?
+    error_message.nil?
   end
 
   def coordinate_in_use?(row, column)
