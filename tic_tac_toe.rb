@@ -46,10 +46,8 @@ class TicTacToe
   def finished?
     return true if @state == STATE[:FINISHED]
 
-    if horizontal_win? || vertical_win? || diagonal_win? || tie?
-      @state = STATE[:FINISHED]
+    @state = STATE[:FINISHED] if horizontal_win? || vertical_win? || diagonal_win? || tie?
       @winner = @current_turn == player1 ? player2 : player1 ## the person who made the previous move won the game.
-    end
     @state == STATE[:FINISHED]
   end
 
