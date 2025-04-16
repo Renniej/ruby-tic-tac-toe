@@ -56,7 +56,7 @@ class TicTacToe
   def to_s
     display = @gameboard.flat_map do |cell|
       "| #{cell[0] || ' '} | #{cell[1] || ' '} | #{cell[2] || ' '} | \n"
-                         end
+    end
     display.join('')
   end
 
@@ -64,22 +64,19 @@ class TicTacToe
 
   def input_coords(player)
     puts "Please enter next move for #{player.name}"
-    coords = gets.split.map { |coord| Integer(coord) - 1 }
+    coords = gets.split.map { |coord| coord.is_number? ? Integer(coord) - 1 : coord }
     valid_coords?(coords[0], coords[1]) ? coords : input_coords(player) # recursively calls if invalid coords
-  rescue ArgumentError
-    puts 'coordinates contained non-numeric values'
-    input_coords(player)
   end
 
-  def valid_coords?(row, column)
+  def valid_coords?(row, column) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     error_message = nil
-    if !row.is_number? || !column.is_number?
-      error_message = 'coordinates contained non-numeric values'
-    elsif row.nil? || column.nil?
+    if row.nil? || column.nil?
       error_message = '2 arguments expected'
-    elsif !row.between?(0, 2) || !column.between?(0, 2)
+    elsif !row.is_number? || !column.is_number?
+      error_message = 'coordinates contained non-numeric values'
+    elsif !row.to_i.between?(0, 2) || !column.to_i.between?(0, 2)
       error_message = 'coordinates are out of range of the grid'
-    elsif coordinate_in_use?(row, column)
+    elsif coordinate_in_use?(row.to_i, column.to_i)
       error_message = 'That cell is already in use'
     end
 
@@ -106,7 +103,7 @@ class TicTacToe
     win_found
   end
 
-  def diagonal_win?
+  def diagonal_win? # rubocop:disable Metrics/AbcSize
     [@gameboard[0][0], @gameboard[1][1], @gameboard[2][2]].all? { |cell| !cell.nil? && cell == @gameboard[0][0] } ||
       [@gameboard[0][2], @gameboard[1][1], @gameboard[2][0]].all? { |cell| !cell.nil? && cell == @gameboard[0][0] }
   end
