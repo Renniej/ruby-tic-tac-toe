@@ -52,10 +52,11 @@ class TicTacToe
   end
 
   def to_s
-    display = @gameboard.flat_map do |cell|
-      "| #{cell[0] || ' '} | #{cell[1] || ' '} | #{cell[2] || ' '} | \n"
-    end
-    display.join('')
+    display = @gameboard.flat_map { |cell| "| #{cell[0] || ' '} | #{cell[1] || ' '} | #{cell[2] || ' '} | \n" }.join('')
+
+    return display unless @state == STATE[:FINISHED]
+
+    display + tie? ? 'It was a tie' : "#{winner.name} won!"
   end
 
   private
